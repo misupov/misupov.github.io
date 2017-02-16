@@ -6,7 +6,7 @@
     <style>
         #host {
             position: relative;
-            background: url("../images/whitenoise.png");
+            background: url("http://api.thumbr.it/whitenoise-361x370.png?background=212121ff&noise=626262&density=100&opacity=9");
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-family: system-ui;
             width: 100%;
@@ -30,7 +30,7 @@
     
     <div id="host">
         <div id="zoomPane">
-            <svg id="svgCanvas" xmlns="http://www.w3.org/2000/svg"></svg>
+            <svg id="svgCanvas" draggable="false" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
             <content select="turbina-node"></content>
         </div>
     </div>
@@ -185,31 +185,53 @@
 
             setDraggable(element) {
                 element.addEventListener("mousedown", this.mouseDownThis);
+                element.addEventListener("touchstart", this.mouseDownThis);
             }
 
             mouseDown(e) {
                 this.bringToFront(e.currentTarget);
                 if (!(e.target instanceof HTMLInputElement)) {
-                    this.dragged = {
-                        element: e.currentTarget,
-                        deltaX: e.clientX - e.currentTarget.offsetLeft,
-                        deltaY: e.clientY - e.currentTarget.offsetTop
-                    };
+                    if (e.changedTouches) {
+                        this.dragged = {
+                            element: e.currentTarget,
+                            deltaX: e.changedTouches[0].clientX - e.currentTarget.offsetLeft,
+                            deltaY: e.changedTouches[0].clientY - e.currentTarget.offsetTop
+                        };
+                    } else {
+                        this.dragged = {
+                            element: e.currentTarget,
+                            deltaX: e.clientX - e.currentTarget.offsetLeft,
+                            deltaY: e.clientY - e.currentTarget.offsetTop
+                        };
+                    }
                     window.addEventListener('mousemove', this.mouseMoveThis, true);
+                    window.addEventListener('touchmove', this.mouseMoveThis, true);
                     window.addEventListener('mouseup', this.mouseUpThis, false);
+                    window.addEventListener('touchend', this.mouseUpThis, false);
                     e.preventDefault();
                 }
             }
 
             mouseUp(e) {
-                window.removeEventListener('mousemove', this.mouseMoveThis, true);
+                window.removeEventListener('mousemove', this.mouseMoveThis);
+                window.removeEventListener('touchmove', this.mouseMoveThis);
                 e.preventDefault();
             }
 
             mouseMove(e) {
+                var clientX, clientY;
+                if (e.changedTouches) {
+                    clientX = e.changedTouches[0].clientX;
+                    clientY = e.changedTouches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+
+
                 var element = this.dragged.element;
-                let left = e.clientX - this.dragged.deltaX;
-                let top = e.clientY - this.dragged.deltaY;
+                let left = clientX - this.dragged.deltaX;
+                let top = clientY - this.dragged.deltaY;
                 element.setAttribute("left", left / this.zoom);
                 element.setAttribute("top", top / this.zoom);
                 element.style.position = 'absolute';
