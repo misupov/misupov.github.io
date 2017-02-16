@@ -362,10 +362,6 @@
     })();
 </script>
 
-<link rel="import" href="turbina-node.html">
-<link rel="import" href="turbina-pin.html">
-<link rel="import" href="turbina-link.html">
-
 <template id="turbinaSurfaceTemplate">
     <style>
         #host {
@@ -476,7 +472,6 @@
 
                     if (needsRedraw) {
                         this.redrawAllLinks();
-                        console.debug(Math.random());
                     } else {
                         cancelAnimationFrame(this.rafId);
                         this.isAnimating = false;
