@@ -1,0 +1,254 @@
+﻿<link rel="import" href="turbina-node.html">
+<link rel="import" href="turbina-pin.html">
+<link rel="import" href="turbina-link.html">
+
+<template id="tmpl">
+    <style>
+        #host {
+            position: relative;
+            background: url("http://api.thumbr.it/whitenoise-361x370.png?background=212121ff&noise=626262&density=100&opacity=9");
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: system-ui;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #zoomPane {
+            width: 100%;
+            height: 100%;
+        }
+        ::content turbina-node {
+            position: absolute;
+        }
+        svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
+    
+    <div id="host">
+        <div id="zoomPane">
+            <svg id="svgCanvas" draggable="false" focusable="false" xmlns="http://www.w3.org/2000/svg"></svg>
+            <content select="turbina-node"></content>
+        </div>
+    </div>
+</template>
+
+<script type="text/javascript" src="../js/ropes.js"></script>
+<script>
+    (function () {
+        'use strict';
+
+        const localDocument = document.currentScript.ownerDocument;
+        class TurbinaSurface extends HTMLElement {
+
+            get zoom() {
+                return this._zoom;
+            }
+
+            set zoom(value) {
+                this._zoom = value;
+                this.root.querySelector("#zoomPane").style.transform = `scale(${value})`;
+            }
+
+            createdCallback() {
+                var tmpl = localDocument.getElementById('tmpl');
+
+                this.root = this.createShadowRoot();
+                this.root.appendChild(tmpl.content.cloneNode(true));
+
+                this.mouseDownThis = e => this.mouseDown(e);
+                this.mouseMoveThis = e => this.mouseMove(e);
+                this.mouseUpThis = e => this.mouseUp(e);
+
+                this.dragged = null;
+                this.turbinaNodeMap = new Map();
+                this.light = 0.0;
+                this.to = { x: 300, y: 300 };
+                this.ropes = [];
+                this.prevtimestamp = 0;
+                this.isAnimating = false;
+                this._zoom = 1;
+
+                this.addEventListener("wheel", e => this.wheel(e));
+
+                this.svgCanvas = this.root.querySelector("#svgCanvas");
+
+                this.querySelectorAll("turbina-node").forEach((node, index) =>thistle.handleNewNode(node, index));
+                this.querySelectorAll("turbina-link").forEach(link => thistle.handleNewLink(link));
+
+                var childListObserver = new MutationObserver(mutations => {
+                    mutations.forEach(mutation => {
+                        if (mutation.type === 'childList') {
+                            mutation.addedNodes.forEach((element, nodeIndex) => {
+                                if (element.localName === "turbina-node") {
+                                    this.handleNewNode(element, nodeIndex);
+                                } else if (element.localName === "turbina-link") {
+                                    this.handleNewLink(element);
+                                }
+                            });
+                        }
+                    });
+                });
+
+                childListObserver.observe(this, { 'childList': true, 'subtree': false });
+            }
+
+            animateEdges() {
+                var animationFrameStep = (timestamp) => {
+                    this.isAnimating = true;
+                    var dx = timestamp - this.prevtimestamp;
+                    this.prevtimestamp = timestamp;
+                    this.light = timestamp / 200 % 1.0;
+
+                    let needsRedraw = false;
+
+                    this.ropes.forEach(rope => {
+                        needsRedraw |= rope.needsSimulation();
+                        rope.simulate(dx);
+                    });
+
+                    if (needsRedraw) {
+                        this.redrawAllLinks();
+                        console.debug(Math.random());
+                    } else {
+                        cancelAnimationFrame(this.rafId);
+                        this.isAnimating = false;
+                    }
+                };
+
+                this.rafId = requestAnimationFrame(timestamp => animationFrameStep(timestamp));
+            }
+
+            handleNewNode(node, nodeIndex) {
+                this.setDraggable(node);
+                node.style.zIndex = nodeIndex.toString();
+                this.turbinaNodeMap.set(node.id, node);
+
+                var nodeAttributesObserver = new MutationObserver(mutations => {
+                    mutations.forEach(mutation => {
+                        if (mutation.type === 'attributes') {
+                        }
+                    });
+                    if (!this.isAnimating) {
+                        this.animateEdges();
+                    }
+                });
+
+                nodeAttributesObserver.observe(node, {'childList': false, 'subtree': false, 'attributes': true });
+
+            }
+
+            handleNewLink(link) {
+                let fromNodeId = link.fromNode;
+                let fromPinId = link.fromPin;
+                let toNodeId = link.toNode;
+                let toPinId = link.toPin;
+
+                let fromNode = this.turbinaNodeMap.get(fromNodeId);
+                let fromPin = fromNode.getPin(fromPinId);
+                let toNode = this.turbinaNodeMap.get(toNodeId);
+                let toPin = toNode.getPin(toPinId);
+
+                this.ropes.push(new Rope(fromPin.anchorPoint, toPin.anchorPoint));
+            }
+
+            redrawAllLinks() {
+                this.svgCanvas.querySelectorAll("path").forEach(node => node.parentNode.removeChild(node));
+                this.ropes.forEach(rope => this.redrawLink(rope));
+                this.animateEdges();
+            }
+
+            redrawLink(rope) {
+                if (rope != null) {
+                    var line = d3.line()
+                        .x(function (d) { return d.x; })
+                        .y(function (d) { return d.y; })
+                        .curve(d3.curveBasis);
+
+                    var ld = line(rope.getPath());
+                    let svg = d3.select(this.svgCanvas);
+                    svg.append("path")
+                        .attr("stroke", "black")
+                        .attr("stroke-width", "4")
+                        .attr("fill", "none")
+                        .attr("d", ld);
+                    svg.append("path")
+                        .attr("stroke", "white")
+                        .attr("stroke-width", "2")
+                        .attr("fill", "none")
+                        .attr("d", ld);
+                }
+            }
+
+            setDraggable(element) {
+                element.addEventListener("mousedown", this.mouseDownThis);
+            }
+
+            mouseDown(e) {
+                this.bringToFront(e.currentTarget);
+                if (!(e.target instanceof HTMLInputElement)) {
+                    this.dragged = {
+                        element: e.currentTarget,
+                        deltaX: e.clientX - e.currentTarget.offsetLeft,
+                        deltaY: e.clientY - e.currentTarget.offsetTop
+                    };
+                    window.addEventListener('mousemove', this.mouseMoveThis, true);
+                    window.addEventListener('mouseup', this.mouseUpThis, false);
+                    e.preventDefault();
+                }
+            }
+
+            mouseUp(e) {
+                window.removeEventListener('mousemove', this.mouseMoveThis, true);
+                e.preventDefault();
+            }
+
+            mouseMove(e) {
+                var element = this.dragged.element;
+                let left = e.clientX - this.dragged.deltaX;
+                let top = e.clientY - this.dragged.deltaY;
+                element.setAttribute("left", left / this.zoom);
+                element.setAttribute("top", top / this.zoom);
+                element.style.position = 'absolute';
+                element.style.left = (left / this.zoom) + 'px';
+                element.style.top = (top / this.zoom) + 'px';
+                e.preventDefault();
+            }
+
+            wheel(e) {
+                let wd = e.wheelDelta / 240.0;
+                this.zoom = this.zoom * (1.0 + wd / 10);
+                if (this.zoom > 1) {
+                    this.zoom = 1;
+                }
+            }
+
+            bringToFront(element) {
+                var elementZIndex = parseInt(element.style.zIndex) || 0;
+                var maxZIndex = elementZIndex;
+                for (var i = 0; i < element.parentElement.children.length; i++) {
+                    var e = element.parentElement.children[i];
+                    var zIndex = parseInt(e.style.zIndex) || 0;
+                    if (e !== element && zIndex > maxZIndex) {
+                        maxZIndex = zIndex;
+                    }
+                }
+                if (elementZIndex < maxZIndex) {
+                    element.style.zIndex = (maxZIndex + 1).toString();
+                }
+                this.querySelectorAll("turbina-node").forEach(node => {
+                        if (node !== element) {
+                            node.setAttribute("selected", false);
+                        }
+                    }
+                );
+                element.setAttribute("selected", true);
+            }
+        }
+        document.registerElement('turbina-surface', TurbinaSurface);
+    })();
+
+</script>

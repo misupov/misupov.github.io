@@ -1,0 +1,31 @@
+﻿<script>
+        'use strict';
+
+        class TurbinaLink extends HTMLElement {
+
+            get fromNode() {
+                return this.getAttribute("from-node");
+            }
+
+            get fromPin() {
+                return this.getAttribute("from-pin");
+            }
+
+            get toNode() {
+                return this.getAttribute("to-node");
+            }
+
+            get toPin() {
+                return this.getAttribute("to-pin");
+            }
+
+            createdCallback() {
+/*                let fromNode = this.getAttribute("from-node");
+                let fromPin = this.getAttribute("from-pin");
+                let toNode = this.getAttribute("to-node");
+                let toPin = this.getAttribute("to-pin");*/
+            }
+        }
+
+        document.registerElement("turbina-link", TurbinaLink);
+</script>

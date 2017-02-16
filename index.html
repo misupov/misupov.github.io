@@ -1,1 +1,84 @@
-Hello World!
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Turbina</title>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/d3/d3.js"></script>
+    <link rel="import" href="components/turbina-surface.html">
+    <link rel="import" href="components/turbina-node.html">
+    <link rel="import" href="components/turbina-pin.html">
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+<div style="width: 100vw; height: 100vh">
+    <turbina-surface id="surface">
+    </turbina-surface>
+</div>
+
+<script>
+    window.onload = function () {
+        var backgrounds = [
+            "https://maxoffsky.com/word/wp-content/uploads/2014/04/andreasbg.png",
+            "http://designwoop.com/uploads/2012/03/01_free_subtle_textures_apple_ios_linen_texture.jpg",
+            "http://designreflect.com/wp-content/uploads/2012/09/wooden-textures/Wooden-Background.jpg",
+            "http://www.gxdmtl.com/pics/main/24/293154-css-background.jpg",
+            "http://www.zingerbug.com/Backgrounds/background_images/black_diagonal_stripes_seamless_background_pattern.jpg",
+            "http://cdn.mysitemyway.com/etc-mysitemyway/webtreats/assets/posts/903/thumbs/tileable-leather-patterns-1.jpg",
+            "http://static2.grsites.com/archive/textures/natfl/natfl467.jpg",
+            "http://download-free-templates.com/wp-content/uploads/2012/09/vintage.jpg",
+            "http://www.publicdomainpictures.net/pictures/140000/nahled/pink-bokeh-background-1445528998x9l.jpg"
+        ];
+
+        var s = "";
+        for (let i = 0; i < backgrounds.length; i++) {
+            var top = Math.round(Math.random() * 700);
+            var left = Math.round(Math.random() * 1200);
+            s = s +
+`<turbina-node id="node${i}" 
+               title="Timer ${i}"
+               background-image="url(${backgrounds[i % backgrounds.length]})"
+               icon="https://image.flaticon.com/icons/svg/189/189106.svg"
+               style="top: ${top}px; left: ${left}px">
+    <turbina-pin id="pi0" input>Enabled</turbina-pin>
+    <turbina-pin id="pi1" input>
+        <input type="text">Period
+    </turbina-pin>
+    <turbina-pin output>Counter</turbina-pin>
+    <turbina-pin id="po0" output>Elapsed</turbina-pin>
+    <turbina-pin input advanced>High Frequency</turbina-pin>
+    <turbina-pin input advanced>Delay</turbina-pin>
+    <turbina-pin output advanced>
+        <div>
+            <img src="https://image.flaticon.com/icons/svg/321/321805.svg" width="25" height="25">
+        </div>
+    </turbina-pin>
+</turbina-node>`;
+        }
+
+        for (let i = 1; i < backgrounds.length; i++) {
+            s = s + `<turbina-link from-node="node${i - 1}" from-pin="po0" to-node="node${i}" to-pin="pi0"></turbina-link>`
+                + `<turbina-link from-node="node${i - 1}" from-pin="po0" to-node="node${i}" to-pin="pi1"></turbina-link>`;
+        }
+
+        s += `<turbina-link from-node="node${backgrounds
+            .length -
+            1}" from-pin="po0" to-node="node0" to-pin="pi1"></turbina-link>`;
+
+        let x = 1;
+        let dx = 1.01;
+        let surface = document.querySelector("#surface");
+        surface.innerHTML = s;
+//        setInterval(() => {
+//            x = x * dx;
+//            if (x > 5 || x < 1.0 / 5) {
+//                dx = 1.0 / dx;
+//            }
+//            surface.zoom = x;
+//        }, 20);
+    };
+</script>
+</body>
+</html>

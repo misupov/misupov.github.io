@@ -1,0 +1,87 @@
+﻿<template id="tmpl">
+    <style>
+        .pin-container {
+            display: flex;
+            align-items: center;
+            direction: var(--container-direction);
+            /*flex-direction: var(--container-direction);*/
+        }
+        .pin-bullet {
+            opacity: 0.9;
+            width: 6px;
+            height: 6px;
+            margin: var(--bullet-margin); /*0 8px 0 -12px;*/
+            border-radius: 4px;
+            background: cadetblue;
+            border-width: 1px;
+            border-style: solid;
+            border-color: white;
+        }
+    </style>
+    
+    <div class="pin-container">
+        <div class="pin-bullet"></div>
+        <div class="pin-content">
+            <content></content>
+        </div>
+    </div>
+</template>
+
+<script>
+
+    (function () {
+        'use strict';
+
+        const localDocument = document.currentScript.ownerDocument;
+
+        class TurbinaPin extends HTMLElement {
+
+            get anchorPoint() {
+                return this.aPoint;
+            }
+
+            refreshAnchorPoint(parent, parentX, parentY) {
+                let element = this.root.querySelector(".pin-bullet");
+                const w = element.clientWidth;
+                const h = element.clientHeight;
+                let offsetX = 0;
+                let offsetY = 0;
+                while (element !== parent) {
+                    offsetX += element.offsetLeft;
+                    offsetY += element.offsetTop;
+                    element = element.offsetParent;
+                }
+
+                this.aPoint.x = parentX + offsetX + w / 2;
+                this.aPoint.y = parentY + offsetY + h / 2;
+            }
+
+            createdCallback() {
+                var tmpl = localDocument.getElementById('tmpl');
+
+                this.root = this.createShadowRoot();
+                this.root.appendChild(tmpl.content.cloneNode(true));
+                this.aPoint = { x: 0, y: 0 };
+
+                if (this.hasAttribute("output")) {
+                    this.style.setProperty("--container-direction", "rtl");
+                    this.style.setProperty("--bullet-margin", "0 -12px 0 8px");
+                } else {
+                    this.style.setProperty("--container-direction", "lft");
+                    this.style.setProperty("--bullet-margin", "0 8px 0 -12px");
+                }
+
+                this.mouseDownThis = e => this.mouseDown(e);
+
+                this.root.querySelector(".pin-bullet").addEventListener("mousedown", this.mouseDownThis);
+            }
+
+            mouseDown(e) {
+                this.turbinaSurface.beginLinkage(this);
+                e.preventDefault();
+            }
+        }
+
+        document.registerElement('turbina-pin', TurbinaPin);
+    })();
+</script>

@@ -1,0 +1,15 @@
+{
+  "name": "d3-path",
+  "homepage": "https://github.com/d3/d3-path",
+  "version": "1.0.3",
+  "_release": "1.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.3",
+    "commit": "3da7c02b38ae8361f0ed23a1fc3ecbd368c99951"
+  },
+  "_source": "https://github.com/d3/d3-path.git",
+  "_target": "v1.0.3",
+  "_originalSource": "d3-path",
+  "_direct": true
+}

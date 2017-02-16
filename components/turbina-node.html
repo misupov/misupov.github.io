@@ -1,0 +1,238 @@
+﻿<template id="tmpl">
+    <style>
+        @keyframes example {
+            from {
+                transform: scale(0);
+            }
+
+            to {
+                transform: scale(1);
+            }
+        }
+        .node-wrapper {
+            filter: drop-shadow(3px 3px 2px black);
+            border-radius: 8px;
+        }
+        .node:after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-image: var(--background-image);
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+            z-index: -1;
+            border-radius: 8px;
+        }
+        .node {
+            /*opacity: 0.9;*/
+            background-color: transparent;
+            display: flex;
+            flex-direction: column;
+            width: max-content;
+            /*background-image: url("http://api.thumbr.it/whitenoise-361x370.png?background=4ea6caff&noise=626262&density=100&opacity=7");*/
+            /*background-image: url("http://www.zingerbug.com/Backgrounds/background_images/gray_diagonal_stripes_seamless_background_pattern.jpg");*/
+            border-radius: 8px;
+            border: 1px solid #3866a3;
+            box-shadow: inset 1px 1px 1px #bee2f9;
+            color: #fff;
+            cursor: default;
+            user-select: none;
+            /*animation-name: example;
+            animation-timing-function: ease-in;
+            animation-duration: 0.2s;
+            animation-iteration-count: 100;*/
+        }
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 7px 7px 0 0;
+            height: max-content;
+            text-align: center;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header #icon {
+            width: 20px;
+            height: 20px;
+            margin:0 6px 0 0;
+        }
+
+        .pins-container {
+            font-size: small;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            grid-template-columns: auto auto;
+        }
+
+        .pins-left-container {
+            /*margin: 0 0 0 -20px;*/
+            padding: 4px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: space-around;
+        }
+
+        .pins-right-container {
+            padding: 4px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-around;
+        }
+
+        .footer {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            border-radius: 0 0 7px 7px;
+            background-color: rgba(0, 0, 0, 0.3);
+            grid-template-columns: auto auto;
+            font-size: small;
+        }
+    </style>
+    
+    <div class="node-wrapper">
+        <div class="node">
+            <div class="header">
+                <!--svg style="width:12px" version="1.1" viewBox="0 0 94 89" xmlns="http://www.w3.org/2000/svg"> <path d="M46.9,0.9 L32.5,29.9 L47,41.6 L61.4,29.9 L46.9,0.9 Z"></path> <path d="M23.5,57.4 L18,89.1 L46.8,74.1 L42.2,56.3 L23.5,57.4 Z"></path> <path d="M51.8,56.2 L47.2,74.1 L76,89.1 L70.5,57.4 L51.8,56.2 Z"></path> <path d="M39.1,47.3 L32.2,30.1 L0,34.6 L23.3,57.1 L39.1,47.3 Z"></path> <path d="M70.6,57.1 L93.9,34.6 L61.8,30.1 L54.8,47.1 L70.6,57.1 Z"></path></svg-->
+                <!--svg focusable="false" style="width:200px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"></path></svg-->
+                <svg focusable="false" enable-background="new 0 0 32 32" height="20px" version="1.1" viewBox="0 0 32 32" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="settings_2_"><path clip-rule="evenodd" d="M8,6.021V3c0-1.654-1.346-3-3-3S2,1.346,2,3v3.021   C0.792,6.936,0,8.369,0,10s0.792,3.064,2,3.977V29c0,1.654,1.346,3,3,3s3-1.346,3-3V13.977c1.208-0.912,2-2.346,2-3.977   S9.208,6.936,8,6.021z M4,3c0-0.553,0.447-1,1-1s1,0.447,1,1v2.1C5.677,5.035,5.343,5,5,5S4.323,5.035,4,5.1V3z M6,29   c0,0.553-0.447,1-1,1s-1-0.447-1-1V14.898C4.323,14.965,4.657,15,5,15s0.677-0.035,1-0.102V29z M7.865,10.84   c-0.016,0.053-0.03,0.105-0.049,0.158c-0.095,0.264-0.217,0.514-0.378,0.736c-0.004,0.006-0.01,0.01-0.014,0.016   c-0.174,0.238-0.381,0.449-0.616,0.627c-0.004,0.004-0.007,0.006-0.01,0.008c-0.241,0.182-0.51,0.328-0.799,0.43   C5.686,12.928,5.353,13,5,13s-0.686-0.072-1-0.186c-0.289-0.102-0.558-0.248-0.799-0.43c-0.003-0.002-0.006-0.004-0.01-0.008   c-0.235-0.178-0.442-0.389-0.616-0.627c-0.004-0.006-0.01-0.01-0.014-0.016c-0.161-0.223-0.283-0.473-0.378-0.736   c-0.019-0.053-0.033-0.105-0.049-0.158C2.055,10.572,2,10.293,2,10c0-0.295,0.055-0.574,0.135-0.842   c0.016-0.053,0.03-0.105,0.049-0.156C2.278,8.738,2.4,8.488,2.562,8.264c0.004-0.006,0.01-0.01,0.014-0.016   c0.174-0.236,0.381-0.449,0.616-0.627c0.004-0.002,0.007-0.006,0.01-0.008C3.442,7.434,3.711,7.287,4,7.184   C4.314,7.072,4.647,7,5,7s0.686,0.072,1,0.184c0.289,0.104,0.558,0.25,0.799,0.43c0.003,0.002,0.006,0.006,0.01,0.008   c0.235,0.178,0.442,0.391,0.616,0.627c0.004,0.006,0.01,0.01,0.014,0.016C7.6,8.488,7.722,8.738,7.816,9.002   C7.835,9.053,7.85,9.105,7.865,9.158C7.945,9.426,8,9.705,8,10C8,10.293,7.945,10.572,7.865,10.84z" fill="#333333" fill-rule="evenodd" /><path clip-rule="evenodd" d="M30,6.021V3c0-1.654-1.346-3-3-3s-3,1.346-3,3v3.021   C22.791,6.936,22,8.369,22,10s0.791,3.064,2,3.977V29c0,1.654,1.346,3,3,3s3-1.346,3-3V13.977c1.207-0.912,2-2.346,2-3.977   S31.207,6.936,30,6.021z M26,3c0-0.553,0.447-1,1-1s1,0.447,1,1v2.1C27.676,5.035,27.342,5,27,5c-0.344,0-0.678,0.035-1,0.1V3z    M28,29c0,0.553-0.447,1-1,1s-1-0.447-1-1V14.898C26.322,14.965,26.656,15,27,15c0.342,0,0.676-0.035,1-0.102V29z M29.865,10.84   c-0.016,0.053-0.031,0.105-0.049,0.158c-0.096,0.264-0.217,0.514-0.379,0.736c-0.004,0.006-0.01,0.01-0.014,0.016   c-0.174,0.238-0.381,0.449-0.615,0.627c-0.004,0.004-0.008,0.006-0.01,0.008c-0.242,0.182-0.51,0.328-0.799,0.43   C27.686,12.928,27.352,13,27,13c-0.354,0-0.686-0.072-1-0.186c-0.289-0.102-0.559-0.248-0.799-0.43   c-0.004-0.002-0.006-0.004-0.01-0.008c-0.236-0.178-0.443-0.389-0.617-0.627c-0.004-0.006-0.01-0.01-0.014-0.016   c-0.16-0.223-0.283-0.473-0.377-0.736c-0.02-0.053-0.033-0.105-0.049-0.158C24.055,10.572,24,10.293,24,10   c0-0.295,0.055-0.574,0.135-0.842c0.016-0.053,0.029-0.105,0.049-0.156c0.094-0.264,0.217-0.514,0.377-0.738   c0.004-0.006,0.01-0.01,0.014-0.016c0.174-0.236,0.381-0.449,0.617-0.627c0.004-0.002,0.006-0.006,0.01-0.008   c0.24-0.18,0.51-0.326,0.799-0.43C26.314,7.072,26.646,7,27,7c0.352,0,0.686,0.072,1,0.184c0.289,0.104,0.557,0.25,0.799,0.43   c0.002,0.002,0.006,0.006,0.01,0.008c0.234,0.178,0.441,0.391,0.615,0.627c0.004,0.006,0.01,0.01,0.014,0.016   c0.162,0.225,0.283,0.475,0.379,0.738c0.018,0.051,0.033,0.104,0.049,0.156C29.945,9.426,30,9.705,30,10   C30,10.293,29.945,10.572,29.865,10.84z" fill="#333333" fill-rule="evenodd" /><path clip-rule="evenodd" d="M19,18.021V3c0-1.654-1.346-3-3-3s-3,1.346-3,3v15.021   c-1.208,0.914-2,2.348-2,3.979s0.792,3.064,2,3.977V29c0,1.654,1.346,3,3,3s3-1.346,3-3v-3.023c1.207-0.912,2-2.346,2-3.977   S20.207,18.936,19,18.021z M15,3c0-0.553,0.447-1,1-1c0.553,0,1,0.447,1,1v14.1c-0.324-0.064-0.658-0.1-1-0.1   c-0.343,0-0.677,0.035-1,0.1V3z M17,29c0,0.553-0.447,1-1,1c-0.553,0-1-0.447-1-1v-2.102C15.323,26.965,15.657,27,16,27   c0.342,0,0.676-0.035,1-0.102V29z M18.865,22.84c-0.016,0.053-0.031,0.105-0.049,0.158c-0.096,0.264-0.217,0.514-0.379,0.736   c-0.004,0.006-0.01,0.01-0.014,0.016c-0.174,0.238-0.381,0.449-0.615,0.627c-0.004,0.004-0.008,0.006-0.01,0.008   c-0.242,0.182-0.51,0.328-0.799,0.43C16.686,24.928,16.352,25,16,25c-0.353,0-0.686-0.072-1-0.186   c-0.289-0.102-0.558-0.248-0.799-0.43c-0.003-0.002-0.006-0.004-0.01-0.008c-0.235-0.178-0.442-0.389-0.616-0.627   c-0.004-0.006-0.01-0.01-0.014-0.016c-0.161-0.223-0.283-0.473-0.378-0.736c-0.019-0.053-0.033-0.105-0.049-0.158   C13.055,22.572,13,22.293,13,22c0-0.295,0.055-0.574,0.135-0.842c0.016-0.053,0.03-0.105,0.049-0.156   c0.095-0.264,0.217-0.514,0.378-0.738c0.004-0.006,0.01-0.01,0.014-0.016c0.174-0.236,0.381-0.449,0.616-0.627   c0.004-0.002,0.007-0.006,0.01-0.008c0.241-0.18,0.51-0.326,0.799-0.43C15.314,19.072,15.647,19,16,19c0.352,0,0.686,0.072,1,0.184   c0.289,0.104,0.557,0.25,0.799,0.43c0.002,0.002,0.006,0.006,0.01,0.008c0.234,0.178,0.441,0.391,0.615,0.627   c0.004,0.006,0.01,0.01,0.014,0.016c0.162,0.225,0.283,0.475,0.379,0.738c0.018,0.051,0.033,0.104,0.049,0.156   C18.945,21.426,19,21.705,19,22C19,22.293,18.945,22.572,18.865,22.84z" fill="#333333" fill-rule="evenodd" /></g></svg>
+                <img draggable="false" id="icon">
+                <span id="title"></span>
+            </div>
+            <div class="pins-container">
+                <div class="pins-left-container">
+                    <content select="turbina-pin[input]:not([advanced])"></content>
+                </div>
+                <div class="pins-right-container">
+                    <content select="turbina-pin[output]:not([advanced])"></content>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="pins-left-container">
+                    <content select="turbina-pin[input][advanced]"></content>
+                </div>
+                <div class="pins-right-container">
+                    <content select="turbina-pin[output][advanced]"></content>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    (function () {
+        'use strict';
+
+        const localDocument = document.currentScript.ownerDocument;
+
+        class TurbinaNode extends HTMLElement {
+
+/*            constructor() {
+                super();
+            }*/
+
+            get title() {
+                return this.getAttribute("title");
+            }
+
+            set title(value) {
+                var header = this.root.querySelector(".header");
+                header.querySelector("#title").innerHTML = value;
+            }
+
+            set icon(value) {
+                var header = this.root.querySelector(".header");
+                header.querySelector("#icon").src = value;
+            }
+
+            getPin(id) {
+                return this.querySelector("#" + id);
+            }
+
+/*            set properties(prop) {
+                this.btntext = prop.text;
+            }*/
+
+            createdCallback() {
+                var tmpl = localDocument.getElementById('tmpl');
+
+                this.root = this.createShadowRoot();
+                this.root.appendChild(tmpl.content.cloneNode(true));
+                this.title = this.getAttribute("title");
+                this.icon = this.getAttribute("icon");
+
+                this.setAttribute("left", this.clientLeft);
+                this.setAttribute("top", this.clientTop);
+
+                this.style.setProperty("--background-image", this.getAttribute("background-image"));
+
+                var mo = new MutationObserver(mutations => {
+                    mutations.forEach(mutation => {
+                        if (mutation.type === 'attributes') {
+                            if (mutation.attributeName === 'left' || mutation.attributeName === 'top' || mutation.attributeName === 'width' || mutation.attributeName === 'height' || mutation.attributeName === 'style') {
+
+                                var left = parseInt(this.style.left);
+                                var top = parseInt(this.style.top);
+
+                                this.querySelectorAll("turbina-pin").forEach(pin => pin.refreshAnchorPoint(this, left, top));
+                            }
+                        } else if (mutation.type === 'childList') {
+                        }
+                    });
+                });
+
+                mo.observe(this, { 'childList': true, 'subtree': false, 'attributes': true });
+
+                var ro = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        this.setAttribute("width", Math.floor(entry.contentRect.width / window.devicePixelRatio));
+                        this.setAttribute("height", Math.floor(entry.contentRect.height / window.devicePixelRatio));
+                    }
+                });
+                ro.observe(this);
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {
+                if (name === 'selected') {
+                    var selected = newValue === 'true';
+                    this.root.querySelector(".node-wrapper").style.boxShadow = selected ? "0 0 8px #bee2f9" : null;
+                }
+            }
+
+            attachedCallback() {
+                //this.innerHTML = "kkk";
+/*            this.innerHTML = `
+                           <style> 
+                           p { color: orange; }
+                           </style>
+                           <p>I'm in a custom element <span id='spn' style='color:blue'></span> the below button is with me as well :).</p>
+                           <button id='btn'></button>
+                           `;
+                            var spn = this.querySelector('span');
+                            var btn = this.querySelector('button');
+                            btn.addEventListener('click', () => alert('The button ' + btn.textContent + ' had been clicked'));*/
+
+                /*this.querySelector('#spn').innerHTML = this.btntext != null ? this.btntext : this.dataset['text'];
+                this.querySelector('#btn').textContent = this.btntext != null ? this.btntext : this.dataset['text'];*/
+            }
+
+            /*set properties(prop) {
+                this.btntext = prop.text;
+            }
+    
+            get text() {
+                return this.textContent;
+            } */
+        }
+
+        document.registerElement("turbina-node", TurbinaNode);
+    })();
+</script>
