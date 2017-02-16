@@ -2,7 +2,7 @@
 <link rel="import" href="turbina-pin.html">
 <link rel="import" href="turbina-link.html">
 
-<template id="tmpl">
+<template id="turbinaSurfaceTemplate">
     <style>
         #host {
             position: relative;
@@ -54,7 +54,7 @@
             }
 
             createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
+                var tmpl = localDocument.getElementById('turbinaSurfaceTemplate');
 
                 this.root = this.createShadowRoot();
                 this.root.appendChild(tmpl.content.cloneNode(true));

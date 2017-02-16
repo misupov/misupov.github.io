@@ -1,4 +1,4 @@
-﻿<template id="tmpl">
+﻿<template id="turbinaNodeTemplate">
     <style>
         @keyframes example {
             from {
@@ -162,7 +162,7 @@
             }*/
 
             createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
+                var tmpl = localDocument.getElementById('turbinaNodeTemplate');
 
                 this.root = this.createShadowRoot();
                 this.root.appendChild(tmpl.content.cloneNode(true));

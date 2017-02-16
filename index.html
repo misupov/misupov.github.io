@@ -11,7 +11,127 @@
 </head>
 <body>
 
-<template id="tmpl">
+<template id="turbinaPinTemplate">
+    <style>
+        .pin-container {
+            display: flex;
+            align-items: center;
+            direction: var(--container-direction);
+            /*flex-direction: var(--container-direction);*/
+        }
+        .pin-bullet {
+            opacity: 0.9;
+            width: 6px;
+            height: 6px;
+            margin: var(--bullet-margin); /*0 8px 0 -12px;*/
+            border-radius: 4px;
+            background: cadetblue;
+            border-width: 1px;
+            border-style: solid;
+            border-color: white;
+        }
+    </style>
+    
+    <div class="pin-container">
+        <div class="pin-bullet"></div>
+        <div class="pin-content">
+            <content></content>
+        </div>
+    </div>
+</template>
+
+<script>
+
+    (function () {
+        'use strict';
+
+        const localDocument = document.currentScript.ownerDocument;
+
+        class TurbinaPin extends HTMLElement {
+
+            get anchorPoint() {
+                return this.aPoint;
+            }
+
+            refreshAnchorPoint(parent, parentX, parentY) {
+                let element = this.root.querySelector(".pin-bullet");
+                const w = element.clientWidth;
+                const h = element.clientHeight;
+                let offsetX = 0;
+                let offsetY = 0;
+                while (element !== parent) {
+                    offsetX += element.offsetLeft;
+                    offsetY += element.offsetTop;
+                    element = element.offsetParent;
+                }
+
+                this.aPoint.x = parentX + offsetX + w / 2;
+                this.aPoint.y = parentY + offsetY + h / 2;
+            }
+
+            createdCallback() {
+                var tmpl = localDocument.getElementById('turbinaPinTemplate');
+
+                this.root = this.createShadowRoot();
+                this.root.appendChild(tmpl.content.cloneNode(true));
+                this.aPoint = { x: 0, y: 0 };
+
+                if (this.hasAttribute("output")) {
+                    this.style.setProperty("--container-direction", "rtl");
+                    this.style.setProperty("--bullet-margin", "0 -12px 0 8px");
+                } else {
+                    this.style.setProperty("--container-direction", "lft");
+                    this.style.setProperty("--bullet-margin", "0 8px 0 -12px");
+                }
+
+                this.mouseDownThis = e => this.mouseDown(e);
+
+                this.root.querySelector(".pin-bullet").addEventListener("mousedown", this.mouseDownThis);
+            }
+
+            mouseDown(e) {
+                this.turbinaSurface.beginLinkage(this);
+                e.preventDefault();
+            }
+        }
+
+        document.registerElement('turbina-pin', TurbinaPin);
+    })();
+</script>
+
+<script>
+        'use strict';
+
+        class TurbinaLink extends HTMLElement {
+
+            get fromNode() {
+                return this.getAttribute("from-node");
+            }
+
+            get fromPin() {
+                return this.getAttribute("from-pin");
+            }
+
+            get toNode() {
+                return this.getAttribute("to-node");
+            }
+
+            get toPin() {
+                return this.getAttribute("to-pin");
+            }
+
+            createdCallback() {
+/*                let fromNode = this.getAttribute("from-node");
+                let fromPin = this.getAttribute("from-pin");
+                let toNode = this.getAttribute("to-node");
+                let toPin = this.getAttribute("to-pin");*/
+            }
+        }
+
+        document.registerElement("turbina-link", TurbinaLink);
+</script>
+
+<template id="turbinaNodeTemplate">
     <style>
         @keyframes example {
             from {
@@ -175,7 +295,7 @@
             }*/
 
             createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
+                var tmpl = localDocument.getElementById('turbinaNodeTemplate');
 
                 this.root = this.createShadowRoot();
                 this.root.appendChild(tmpl.content.cloneNode(true));
@@ -203,14 +323,6 @@
                 });
 
                 mo.observe(this, { 'childList': true, 'subtree': false, 'attributes': true });
-
-                var ro = new ResizeObserver(entries => {
-                    for (let entry of entries) {
-                        this.setAttribute("width", Math.floor(entry.contentRect.width / window.devicePixelRatio));
-                        this.setAttribute("height", Math.floor(entry.contentRect.height / window.devicePixelRatio));
-                    }
-                });
-                ro.observe(this);
             }
 
             attributeChangedCallback(name, oldValue, newValue) {
@@ -249,126 +361,12 @@
         document.registerElement("turbina-node", TurbinaNode);
     })();
 </script>
-<template id="tmpl">
-    <style>
-        .pin-container {
-            display: flex;
-            align-items: center;
-            direction: var(--container-direction);
-            /*flex-direction: var(--container-direction);*/
-        }
-        .pin-bullet {
-            opacity: 0.9;
-            width: 6px;
-            height: 6px;
-            margin: var(--bullet-margin); /*0 8px 0 -12px;*/
-            border-radius: 4px;
-            background: cadetblue;
-            border-width: 1px;
-            border-style: solid;
-            border-color: white;
-        }
-    </style>
-    
-    <div class="pin-container">
-        <div class="pin-bullet"></div>
-        <div class="pin-content">
-            <content></content>
-        </div>
-    </div>
-</template>
 
-<script>
+<link rel="import" href="turbina-node.html">
+<link rel="import" href="turbina-pin.html">
+<link rel="import" href="turbina-link.html">
 
-    (function () {
-        'use strict';
-
-        const localDocument = document.currentScript.ownerDocument;
-
-        class TurbinaPin extends HTMLElement {
-
-            get anchorPoint() {
-                return this.aPoint;
-            }
-
-            refreshAnchorPoint(parent, parentX, parentY) {
-                let element = this.root.querySelector(".pin-bullet");
-                const w = element.clientWidth;
-                const h = element.clientHeight;
-                let offsetX = 0;
-                let offsetY = 0;
-                while (element !== parent) {
-                    offsetX += element.offsetLeft;
-                    offsetY += element.offsetTop;
-                    element = element.offsetParent;
-                }
-
-                this.aPoint.x = parentX + offsetX + w / 2;
-                this.aPoint.y = parentY + offsetY + h / 2;
-            }
-
-            createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
-
-                this.root = this.createShadowRoot();
-                this.root.appendChild(tmpl.content.cloneNode(true));
-                this.aPoint = { x: 0, y: 0 };
-
-                if (this.hasAttribute("output")) {
-                    this.style.setProperty("--container-direction", "rtl");
-                    this.style.setProperty("--bullet-margin", "0 -12px 0 8px");
-                } else {
-                    this.style.setProperty("--container-direction", "lft");
-                    this.style.setProperty("--bullet-margin", "0 8px 0 -12px");
-                }
-
-                this.mouseDownThis = e => this.mouseDown(e);
-
-                this.root.querySelector(".pin-bullet").addEventListener("mousedown", this.mouseDownThis);
-            }
-
-            mouseDown(e) {
-                this.turbinaSurface.beginLinkage(this);
-                e.preventDefault();
-            }
-        }
-
-        document.registerElement('turbina-pin', TurbinaPin);
-    })();
-</script>
-<script>
-        'use strict';
-
-        class TurbinaLink extends HTMLElement {
-
-            get fromNode() {
-                return this.getAttribute("from-node");
-            }
-
-            get fromPin() {
-                return this.getAttribute("from-pin");
-            }
-
-            get toNode() {
-                return this.getAttribute("to-node");
-            }
-
-            get toPin() {
-                return this.getAttribute("to-pin");
-            }
-
-            createdCallback() {
-/*                let fromNode = this.getAttribute("from-node");
-                let fromPin = this.getAttribute("from-pin");
-                let toNode = this.getAttribute("to-node");
-                let toPin = this.getAttribute("to-pin");*/
-            }
-        }
-
-        document.registerElement("turbina-link", TurbinaLink);
-</script>
-
-<template id="tmpl">
+<template id="turbinaSurfaceTemplate">
     <style>
         #host {
             position: relative;
@@ -402,7 +400,7 @@
     </div>
 </template>
 
-<script type="text/javascript" src="../js/ropes.js"></script>
+<script type="text/javascript" src="js/ropes.js"></script>
 <script>
     (function () {
         'use strict';
@@ -420,7 +418,7 @@
             }
 
             createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
+                var tmpl = localDocument.getElementById('turbinaSurfaceTemplate');
 
                 this.root = this.createShadowRoot();
                 this.root.appendChild(tmpl.content.cloneNode(true));

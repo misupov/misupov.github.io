@@ -1,4 +1,4 @@
-﻿<template id="tmpl">
+﻿<template id="turbinaPinTemplate">
     <style>
         .pin-container {
             display: flex;
@@ -57,7 +57,7 @@
             }
 
             createdCallback() {
-                var tmpl = localDocument.getElementById('tmpl');
+                var tmpl = localDocument.getElementById('turbinaPinTemplate');
 
                 this.root = this.createShadowRoot();
                 this.root.appendChild(tmpl.content.cloneNode(true));
