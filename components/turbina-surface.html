@@ -213,8 +213,8 @@
             }
 
             mouseUp(e) {
-                window.removeEventListener('mousemove', this.mouseMoveThis);
-                window.removeEventListener('touchmove', this.mouseMoveThis);
+                window.removeEventListener('mousemove', this.mouseMoveThis, true);
+                window.removeEventListener('touchmove', this.mouseMoveThis, true);
                 e.preventDefault();
             }
 
